@@ -1,0 +1,25 @@
+{
+  "app": {
+    "title": "DevFlow Admin"
+  },
+  "admin": {
+    "subtitle": "Admin authentication foundation is ready for Phase 1.",
+    "login": "Login",
+    "login_title": "Admin Sign In",
+    "username": "Username",
+    "password": "Password",
+    "current_admin": "Current admin",
+    "no_session": "No active admin session yet.",
+    "back_to_login": "Back to login"
+  },
+  "common": {
+    "language": "Language",
+    "loading": "Loading...",
+    "request_failed": "Request failed"
+  },
+  "messages": {
+    "common.request_failed": "Request failed. Please try again.",
+    "admin.invalid_credentials": "Incorrect admin username or password.",
+    "admin.login_success": "Admin login successful."
+  }
+}

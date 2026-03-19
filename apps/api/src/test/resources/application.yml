@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:devflow_test;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    enabled: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+devflow:
+  bootstrap:
+    admin:
+      enabled: false
+  cache:
+    redis:
+      enabled: false

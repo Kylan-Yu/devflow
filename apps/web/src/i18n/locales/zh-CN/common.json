@@ -1,0 +1,114 @@
+{
+  "app": {
+    "title": "DevFlow"
+  },
+  "home": {
+    "subtitle": "Phase 3 ?????????????? WebSocket ?????"
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "login_title": "登录账户",
+    "register_title": "创建账户",
+    "email": "邮箱",
+    "password": "密码",
+    "username": "用户名",
+    "display_name": "显示名称",
+    "preferred_language": "偏好语言",
+    "no_account": "还没有账号？",
+    "has_account": "已有账号？"
+  },
+  "feed": {
+    "latest_title": "最新流",
+    "hot_title": "热门流",
+    "load_more": "加载更多",
+    "no_more": "没有更多帖子了。",
+    "category_filter": "分类筛选",
+    "all_categories": "全部分类"
+  },
+  "post": {
+    "create_title": "发布帖子",
+    "edit_title": "编辑帖子",
+    "editor_title": "帖子编辑器",
+    "detail_title": "帖子详情",
+    "title": "标题",
+    "content": "内容",
+    "category": "分类",
+    "tags": "标签",
+    "cover_image": "封面图链接",
+    "publish": "发布",
+    "save": "保存",
+    "edit": "编辑",
+    "delete": "删除",
+    "login_required": "请先登录后再发布或编辑帖子。",
+    "by_author": "作者"
+  },
+  "profile": {
+    "title": "我的主页",
+    "posts_title": "已发布帖子",
+    "no_bio": "暂无个人简介。",
+    "follow": "??",
+    "unfollow": "????"
+  },
+  "common": {
+    "language": "语言",
+    "loading": "加载中...",
+    "request_failed": "请求失败"
+  },
+  "messages": {
+    "common.request_failed": "请求失败，请稍后重试。",
+    "common.internal_error": "服务异常，请稍后重试。",
+    "auth.invalid_credentials": "邮箱或密码错误。",
+    "auth.email_already_exists": "该邮箱已注册。",
+    "auth.username_already_exists": "该用户名已被占用。",
+    "auth.login_success": "登录成功。",
+    "auth.register_success": "注册成功。",
+    "post.not_found": "帖子不存在。",
+    "post.edit_forbidden": "你无权编辑该帖子。",
+    "category.not_found": "分类不存在。",
+    "tag.not_found": "标签不存在。",
+    "feed.invalid_cursor": "分页游标无效。",
+    "auth.unauthorized": "?????",
+    "interaction.post_already_liked": "????????",
+    "interaction.post_not_liked": "??????????",
+    "interaction.post_already_favorited": "??????????",
+    "interaction.post_not_favorited": "??????????",
+    "interaction.comment_not_found": "??????",
+    "interaction.comment_delete_forbidden": "??????????",
+    "interaction.follow_self_forbidden": "???????",
+    "interaction.user_already_following": "?????????",
+    "interaction.user_not_following": "?????????",
+    "notification.not_found": "??????",
+    "notification.like_received": "{{actor}} ???????",
+    "notification.comment_received": "{{actor}} ?????{{preview}}",
+    "notification.follow_received": "{{actor}} ?????"
+  },
+  "interaction": {
+    "like": "??",
+    "unlike": "????",
+    "favorite": "??",
+    "unfavorite": "????",
+    "comment_count": "???",
+    "comment_input": "??????",
+    "comment_submit": "????",
+    "comment_delete": "????",
+    "comments_title": "???",
+    "no_comments": "?????"
+  },
+  "notification": {
+    "title": "????",
+    "login_required": "??????????",
+    "unread_count": "?????{{count}}",
+    "mark_read": "????",
+    "mark_all_read": "??????",
+    "refresh": "??",
+    "empty": "?????",
+    "open_target": "??",
+    "target": {
+      "post": "??",
+      "comment": "??",
+      "user": "??",
+      "unknown": "??"
+    }
+  }
+}

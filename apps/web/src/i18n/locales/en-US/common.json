@@ -1,0 +1,114 @@
+{
+  "app": {
+    "title": "DevFlow"
+  },
+  "home": {
+    "subtitle": "Phase 3 is ready: interactions, async notifications, and WebSocket push."
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "login_title": "Sign In",
+    "register_title": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "display_name": "Display Name",
+    "preferred_language": "Preferred Language",
+    "no_account": "No account yet?",
+    "has_account": "Already have an account?"
+  },
+  "feed": {
+    "latest_title": "Latest Feed",
+    "hot_title": "Hot Feed",
+    "load_more": "Load More",
+    "no_more": "No more posts.",
+    "category_filter": "Category",
+    "all_categories": "All Categories"
+  },
+  "post": {
+    "create_title": "Create Post",
+    "edit_title": "Edit Post",
+    "editor_title": "Post Editor",
+    "detail_title": "Post Detail",
+    "title": "Title",
+    "content": "Content",
+    "category": "Category",
+    "tags": "Tags",
+    "cover_image": "Cover Image URL",
+    "publish": "Publish",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "login_required": "Please login first to create or edit posts.",
+    "by_author": "By"
+  },
+  "profile": {
+    "title": "My Profile",
+    "posts_title": "Published Posts",
+    "no_bio": "No bio yet.",
+    "follow": "Follow",
+    "unfollow": "Unfollow"
+  },
+  "common": {
+    "language": "Language",
+    "loading": "Loading...",
+    "request_failed": "Request failed"
+  },
+  "messages": {
+    "common.request_failed": "Request failed. Please try again.",
+    "common.internal_error": "Server error. Please retry later.",
+    "auth.invalid_credentials": "Incorrect email or password.",
+    "auth.email_already_exists": "Email is already registered.",
+    "auth.username_already_exists": "Username is already taken.",
+    "auth.login_success": "Login successful.",
+    "auth.register_success": "Registration successful.",
+    "post.not_found": "Post not found.",
+    "post.edit_forbidden": "You cannot edit this post.",
+    "category.not_found": "Category not found.",
+    "tag.not_found": "Tag not found.",
+    "feed.invalid_cursor": "Invalid pagination cursor.",
+    "auth.unauthorized": "Please login first.",
+    "interaction.post_already_liked": "You already liked this post.",
+    "interaction.post_not_liked": "You have not liked this post yet.",
+    "interaction.post_already_favorited": "You already favorited this post.",
+    "interaction.post_not_favorited": "You have not favorited this post yet.",
+    "interaction.comment_not_found": "Comment not found.",
+    "interaction.comment_delete_forbidden": "You can only delete your own comments.",
+    "interaction.follow_self_forbidden": "You cannot follow yourself.",
+    "interaction.user_already_following": "You are already following this user.",
+    "interaction.user_not_following": "You are not following this user.",
+    "notification.not_found": "Notification not found.",
+    "notification.like_received": "{{actor}} liked your post.",
+    "notification.comment_received": "{{actor}} commented: {{preview}}",
+    "notification.follow_received": "{{actor}} followed you."
+  },
+  "interaction": {
+    "like": "Like",
+    "unlike": "Unlike",
+    "favorite": "Favorite",
+    "unfavorite": "Unfavorite",
+    "comment_count": "Comments",
+    "comment_input": "Write a comment",
+    "comment_submit": "Post Comment",
+    "comment_delete": "Delete Comment",
+    "comments_title": "Comments",
+    "no_comments": "No comments yet."
+  },
+  "notification": {
+    "title": "Notifications",
+    "login_required": "Please login to view notifications.",
+    "unread_count": "Unread notifications: {{count}}",
+    "mark_read": "Mark Read",
+    "mark_all_read": "Mark All Read",
+    "refresh": "Refresh",
+    "empty": "No notifications yet.",
+    "open_target": "Open",
+    "target": {
+      "post": "Post",
+      "comment": "Comment",
+      "user": "User",
+      "unknown": "Target"
+    }
+  }
+}
