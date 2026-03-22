@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import type { NotificationPushMessage } from '../types/notification';
+import { getAccessToken } from '../utils/authStorage';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
 
-function buildWebSocketUrl(userId: number): string {
+function buildWebSocketUrl(accessToken: string): string {
   const base = API_BASE_URL.replace(/^http/, 'ws');
-  return `${base}/ws/notifications?userId=${userId}`;
+  return `${base}/ws/notifications?token=${encodeURIComponent(accessToken)}`;
 }
 
 interface NotificationSocketOptions {
@@ -22,7 +23,12 @@ export function useNotificationSocket(options: NotificationSocketOptions): void 
       return;
     }
 
-    const socket = new WebSocket(buildWebSocketUrl(userId));
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+      return;
+    }
+
+    const socket = new WebSocket(buildWebSocketUrl(accessToken));
     socket.onmessage = (event) => {
       try {
         const payload = JSON.parse(event.data) as NotificationPushMessage;

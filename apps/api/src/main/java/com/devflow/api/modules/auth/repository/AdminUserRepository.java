@@ -10,4 +10,6 @@ public interface AdminUserRepository extends JpaRepository<AdminUserEntity, Long
     Optional<AdminUserEntity> findByUsernameIgnoreCaseAndStatus(String username, AdminStatus status);
 
     Optional<AdminUserEntity> findByUsernameIgnoreCase(String username);
+
+    Optional<AdminUserEntity> findByIdAndStatus(Long id, AdminStatus status);
 }

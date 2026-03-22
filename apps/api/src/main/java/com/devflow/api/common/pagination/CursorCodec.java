@@ -4,6 +4,7 @@ import com.devflow.api.common.api.ResponseCode;
 import com.devflow.api.common.exception.BusinessException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public class CursorCodec {
         try {
             byte[] decoded = Base64.getUrlDecoder().decode(cursor);
             return objectMapper.readValue(decoded, type);
-        } catch (RuntimeException | JsonProcessingException exception) {
+        } catch (RuntimeException | IOException exception) {
             throw new BusinessException(ResponseCode.INVALID_CURSOR);
         }
     }

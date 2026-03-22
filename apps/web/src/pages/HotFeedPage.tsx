@@ -4,6 +4,7 @@ import { hotFeed } from '../api/feed';
 import { listCategories } from '../api/catalog';
 import type { CategoryItem, PostSummary } from '../types/post';
 import PostCard from '../components/PostCard';
+import BackButton from '../components/BackButton';
 
 export default function HotFeedPage() {
   const { t } = useTranslation();
@@ -65,7 +66,10 @@ export default function HotFeedPage() {
   return (
     <main className="page-shell">
       <header className="top-row">
-        <h1>{t('feed.hot_title')}</h1>
+        <div className="header-left">
+          <BackButton />
+          <h1>{t('feed.hot_title')}</h1>
+        </div>
       </header>
 
       <div className="filter-row">

@@ -12,4 +12,6 @@ public interface FeedPageCache {
     void put(String cacheKey, CursorPageResponse<PostSummaryResponse> value, Duration ttl);
 
     void evictAll();
+    
+    void evict(String cacheKey);
 }

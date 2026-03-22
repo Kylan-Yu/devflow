@@ -1,34 +1,42 @@
 # DevFlow Web
 
-React + TypeScript + Vite user-facing app.  
-React + TypeScript + Vite 的用户端应用。
+React + TypeScript + Vite user-facing application.
+React + TypeScript + Vite 用户端应用。
 
-## Implemented Pages (Phase 1-3) | 已实现页面（阶段 1-3）
+## Implemented Pages | 已实现页面
+- `/` lightweight bilingual home and navigation entry
 - `/login` login page
 - `/register` register page
 - `/feed/latest` latest feed
 - `/feed/hot` hot feed
-- `/posts/new` create post
-- `/posts/:id` post detail + like/favorite/comment interactions
+- `/search` keyword and category search
+- `/posts/new` create post with cover upload
+- `/posts/:id` post detail with like, favorite, and comment interactions
 - `/posts/:id/edit` edit post
-- `/users/:id` profile + follow/unfollow
-- `/notifications` notification list + unread operations
-- `/login` 登录页
-- `/register` 注册页
-- `/feed/latest` 最新流
-- `/feed/hot` 热门流
-- `/posts/new` 发布帖子
-- `/posts/:id` 帖子详情与互动（点赞/收藏/评论）
-- `/posts/:id/edit` 编辑帖子
-- `/users/:id` 个人主页与关注/取关
-- `/notifications` 通知列表与未读处理
+- `/users/:id` profile page with follow / unfollow
+- `/notifications` notification list and unread actions
+- `/settings` profile settings for display name, bio, language, and avatar upload
+- `/reports/me` personal report history page
 
-## i18n
-- Languages: `en-US` / `zh-CN`
-- Notification text includes bilingual templates for like/comment/follow events.
-- 语言支持：`en-US` / `zh-CN`
-- 通知文案已包含点赞/评论/关注等双语模板。
+## Feature Notes | 功能说明
+- Session lifecycle includes login, logout, token refresh, and 401 retry handling
+- User profile supports display name, bio, preferred language, and avatar upload
+- Post workflow supports creation, editing, detail view, and cover image upload
+- Search supports keyword and category filtering with shareable URL params
+- Moderation workflow includes reporting posts or users and tracking report outcomes
+- Real-time notification badge and list updates are powered by WebSocket
+- UI copy is localized from the start with `en-US` and `zh-CN`
 
-## Realtime
-- Connects WebSocket at `/ws/notifications` to update unread badge/list in near real-time.
-- 通过 `/ws/notifications` 接收通知推送，近实时更新未读角标与通知列表。
+## i18n | 国际化
+- Supported locales: `en-US`, `zh-CN`
+- Category labels, button text, messages, and notification templates all support bilingual rendering
+
+## Realtime | 实时能力
+- Connects to `/ws/notifications?token=...` after login
+- Updates unread badge and notification list in near real-time
+
+## Related Files | 关键入口文件
+- Router: `src/router/index.tsx`
+- API client: `src/api/client.ts`
+- i18n: `src/i18n`
+- Shared styles: `src/styles/index.css`

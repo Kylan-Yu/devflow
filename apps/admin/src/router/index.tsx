@@ -1,11 +1,12 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
+import RequireAdminSession from '../components/RequireAdminSession';
 import AdminHomePage from '../pages/AdminHomePage';
 import AdminLoginPage from '../pages/AdminLoginPage';
 
 export const adminRouter = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/login" replace />
+    element: <Navigate to="/dashboard" replace />
   },
   {
     path: '/login',
@@ -13,6 +14,10 @@ export const adminRouter = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <AdminHomePage />
+    element: (
+      <RequireAdminSession>
+        <AdminHomePage />
+      </RequireAdminSession>
+    )
   }
 ]);

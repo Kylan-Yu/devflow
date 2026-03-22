@@ -1,6 +1,7 @@
 package com.devflow.api.modules.user.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -33,8 +34,11 @@ public class UserEntity {
     @Column(name = "bio", length = 255)
     private String bio;
 
-    @Enumerated(EnumType.STRING)
+    @Column(name = "avatar_url", length = 255)
+    private String avatarUrl;
+
     @Column(name = "preferred_language", nullable = false, length = 16)
+    @Convert(converter = LanguagePreferenceConverter.class)
     private LanguagePreference preferredLanguage;
 
     @Enumerated(EnumType.STRING)
@@ -96,6 +100,14 @@ public class UserEntity {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public LanguagePreference getPreferredLanguage() {

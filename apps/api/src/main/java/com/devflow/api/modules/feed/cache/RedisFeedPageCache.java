@@ -36,4 +36,9 @@ public class RedisFeedPageCache implements FeedPageCache {
     public void evictAll() {
         redisCacheClient.evictPattern(FEED_CACHE_WILDCARD);
     }
+
+    @Override
+    public void evict(String cacheKey) {
+        redisCacheClient.evict(cacheKey);
+    }
 }

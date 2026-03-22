@@ -17,6 +17,8 @@ import com.devflow.api.modules.interaction.repository.CommentRepository;
 import com.devflow.api.modules.interaction.repository.PostFavoriteRepository;
 import com.devflow.api.modules.interaction.repository.PostLikeRepository;
 import com.devflow.api.modules.interaction.repository.UserFollowRepository;
+import com.devflow.api.modules.interaction.service.HighConcurrencyCounterService;
+import com.devflow.api.modules.notification.event.AggregatedNotificationEventPublisher;
 import com.devflow.api.modules.notification.event.InteractionEventType;
 import com.devflow.api.modules.notification.event.InteractionNotificationEvent;
 import com.devflow.api.modules.notification.event.NotificationEventPublisher;
@@ -51,7 +53,8 @@ public class InteractionService {
     private final UserFollowRepository userFollowRepository;
     private final PostScoreCalculator postScoreCalculator;
     private final FeedPageCache feedPageCache;
-    private final NotificationEventPublisher notificationEventPublisher;
+    private final AggregatedNotificationEventPublisher aggregatedNotificationEventPublisher;
+    private final HighConcurrencyCounterService highConcurrencyCounterService;
     private final PostService postService;
 
     public InteractionService(PostRepository postRepository,
@@ -62,7 +65,8 @@ public class InteractionService {
                               UserFollowRepository userFollowRepository,
                               PostScoreCalculator postScoreCalculator,
                               FeedPageCache feedPageCache,
-                              NotificationEventPublisher notificationEventPublisher,
+                              AggregatedNotificationEventPublisher aggregatedNotificationEventPublisher,
+                              HighConcurrencyCounterService highConcurrencyCounterService,
                               PostService postService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
@@ -72,7 +76,8 @@ public class InteractionService {
         this.userFollowRepository = userFollowRepository;
         this.postScoreCalculator = postScoreCalculator;
         this.feedPageCache = feedPageCache;
-        this.notificationEventPublisher = notificationEventPublisher;
+        this.aggregatedNotificationEventPublisher = aggregatedNotificationEventPublisher;
+        this.highConcurrencyCounterService = highConcurrencyCounterService;
         this.postService = postService;
     }
 
@@ -92,7 +97,11 @@ public class InteractionService {
         postLike.setCreatedAt(now);
         postLikeRepository.save(postLike);
 
-        applyPostCounterChange(post, 1, 0, 0, now);
+        // 使用高并发计数器更新
+        highConcurrencyCounterService.recordCounterChange(postId, 
+            HighConcurrencyCounterService.CounterType.LIKE, 1);
+        
+        // 使用聚合事件发布
         publishPostLikeEvent(userId, post);
         return toSummary(post);
     }
@@ -267,7 +276,7 @@ public class InteractionService {
                 post.getTitle(),
                 LocalDateTime.now()
         );
-        publishAfterCommit(NotificationEventRouting.ROUTING_KEY_LIKE, event);
+        aggregatedNotificationEventPublisher.publishAfterCommit(NotificationEventRouting.ROUTING_KEY_LIKE, event);
     }
 
     private void publishPostCommentedEvent(UserEntity actor, PostEntity post, CommentEntity comment) {

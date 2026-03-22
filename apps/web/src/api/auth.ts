@@ -1,5 +1,6 @@
 import { requestJson } from './client';
 import type { ApiResponse } from '../types/api';
+import { clearSession, getRefreshToken } from '../utils/authStorage';
 
 export type LanguageValue = 'zh-CN' | 'en-US';
 
@@ -9,6 +10,7 @@ export interface UserProfile {
   email: string;
   displayName: string;
   bio: string | null;
+  avatarUrl: string | null;
   preferredLanguage: LanguageValue;
   role: 'USER' | 'ADMIN';
   status: 'ACTIVE' | 'DISABLED';
@@ -59,4 +61,15 @@ export async function logout(refreshToken: string): Promise<void> {
     method: 'POST',
     body: { refreshToken }
   });
+}
+
+export async function logoutCurrentSession(): Promise<void> {
+  const refreshToken = getRefreshToken();
+  try {
+    if (refreshToken) {
+      await logout(refreshToken);
+    }
+  } finally {
+    clearSession();
+  }
 }

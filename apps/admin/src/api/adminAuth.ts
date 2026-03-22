@@ -1,5 +1,6 @@
 import { requestJson } from './client';
 import type { ApiResponse } from '../types/api';
+import { clearAdminSession } from '../utils/adminSession';
 
 export interface AdminLoginPayload {
   username: string;
@@ -17,7 +18,12 @@ export interface AdminLoginSession {
 export async function adminLogin(payload: AdminLoginPayload): Promise<AdminLoginSession> {
   const response = await requestJson<ApiResponse<AdminLoginSession>>('/api/v1/admin/auth/login', {
     method: 'POST',
-    body: payload
+    body: payload,
+    accessToken: ''
   });
   return response.data;
+}
+
+export function logoutAdminSession(): void {
+  clearAdminSession();
 }

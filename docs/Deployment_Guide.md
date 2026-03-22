@@ -1,96 +1,95 @@
-# Deployment Guide | 部署指南
+# Deployment Guide
 
-## 1. Prerequisites | 环境要求
+## Prerequisites | 环境要求
 **EN**
-- Java 21
+- Java 17
 - Node.js 18+
-- Docker Desktop (or Docker Engine + Compose)
+- Docker Desktop or Docker Engine with Compose
 
 **中文**
-- Java 21
+- Java 17
 - Node.js 18+
-- Docker Desktop（或 Docker Engine + Compose）
+- Docker Desktop 或 Docker Engine + Compose
 
-## 2. Local Quick Start | 本地快速启动
-### 2.1 Start infrastructure
+## Local Quick Start | 本地快速启动
+### 1. Install frontend dependencies
+```bash
+npm ci
+```
+
+### 2. Start infrastructure
 ```bash
 cd deploy
 docker compose up -d mysql redis rabbitmq minio
 ```
 
-### 2.2 Run backend API
+### 3. Run backend API
 ```bash
-cd apps/api
-mvn spring-boot:run
+mvn -f apps/api/pom.xml spring-boot:run
 ```
 
-### 2.3 Run web app
+### 4. Run web app
 ```bash
-cd apps/web
-npm install
-npm run dev
+npm run dev:web
 ```
 
-### 2.4 Run admin app
+### 5. Run admin app
 ```bash
-cd apps/admin
-npm install
-npm run dev
+npm run dev:admin
 ```
 
-## 3. One-Command Compose Flow | 一键 Compose 联调
-```bash
-cd deploy
-docker compose up -d --build
-```
-
-Available services:
+## Local URLs | 本地地址
 - API: `http://localhost:8080`
-- Web (local dev): `http://localhost:5173`
-- Admin (local dev): `http://localhost:5174`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- Web: `http://localhost:5173`
+- Admin: `http://localhost:5174`
 - RabbitMQ Console: `http://localhost:15672`
+- MinIO API: `http://localhost:9000`
 - MinIO Console: `http://localhost:9001`
-- Swagger: `http://localhost:8080/swagger-ui/index.html`
 
-## 4. Demo Accounts and Demo Data | 演示账号与演示数据
+## Demo Accounts | 演示账号
 **EN**
-- Seed data is initialized by Flyway migration.
-- Demo accounts:
+- Admin bootstrap account: `admin / Admin@123456`
+- Seed users:
   - `alice@devflow.local`
   - `bob@devflow.local`
   - `carol@devflow.local`
   - `david@devflow.local`
-- Password: `password`
+- Seed user password: `password`
 
 **中文**
-- 演示数据由 Flyway migration 初始化。
-- 演示账号：
+- 默认管理员账号：`admin / Admin@123456`
+- 预置用户账号：
   - `alice@devflow.local`
   - `bob@devflow.local`
   - `carol@devflow.local`
   - `david@devflow.local`
-- 密码：`password`
+- 预置用户密码：`password`
 
-## 5. Verification Checklist | 验证清单
-- Can access latest/hot feed endpoints
-- Can open post detail page
-- Can see unread count on notifications
-- Can switch language in web/admin
-- Swagger page is accessible
+## Verification Checklist | 启动后验证清单
+- Can register or login from the web app
+- Can browse latest and hot feed
+- Can open a post detail page
+- Can edit profile settings and upload an avatar
+- Can create a post with a cover image
+- Can receive notification unread updates
+- Can login to the admin dashboard and moderate a user or post
 
-- 可以访问最新/热门流  
-- 可以打开帖子详情  
-- 可以看到通知未读数  
-- 可以在 web/admin 切换语言  
-- 可以访问 Swagger 页面  
+- 可以从用户端注册或登录
+- 可以浏览最新流和热门流
+- 可以打开帖子详情页
+- 可以编辑资料并上传头像
+- 可以发布带封面的帖子
+- 可以看到通知未读数更新
+- 可以登录管理后台并治理用户或帖子
 
-## 6. Production Notes | 生产环境注意事项
+## Production Notes | 生产化注意事项
 **EN**
-- Replace all default credentials and secrets.
-- Configure external Redis/MySQL/RabbitMQ with managed services.
-- Add HTTPS termination and proper CORS origin policy.
+- Replace all default credentials and secrets before any public deployment.
+- Move MySQL, Redis, RabbitMQ, and object storage to managed infrastructure.
+- Add HTTPS termination, secure CORS origin allowlists, and production secrets management.
 
 **中文**
-- 替换默认账号、密码与密钥。  
-- 使用外部托管版 Redis/MySQL/RabbitMQ。  
-- 增加 HTTPS 终止与严格 CORS 策略。  
+- 在任何公开部署前替换默认账号、密码和密钥。
+- 将 MySQL、Redis、RabbitMQ 和对象存储切换为托管基础设施。
+- 增加 HTTPS 终止、严格的 CORS 白名单和生产环境密钥管理。

@@ -131,4 +131,54 @@ public class PostQueryRepository {
         }
         return query.getResultList();
     }
+
+    @SuppressWarnings("unchecked")
+    public List<PostEntity> searchPublishedPosts(String keyword,
+                                                 Long categoryId,
+                                                 LocalDateTime cursorPublishedAt,
+                                                 Long cursorId,
+                                                 int limit) {
+        StringBuilder sql = new StringBuilder("""
+                SELECT p.*
+                FROM posts p
+                WHERE p.status = 'PUBLISHED'
+                  AND p.visibility = 'PUBLIC'
+                  AND p.deleted_at IS NULL
+                """);
+
+        if (keyword != null && !keyword.isBlank()) {
+            sql.append("""
+                     AND (
+                       LOWER(p.title) LIKE :keyword
+                       OR LOWER(p.content) LIKE :keyword
+                     )
+                    """);
+        }
+        if (categoryId != null) {
+            sql.append(" AND p.category_id = :categoryId");
+        }
+        if (cursorPublishedAt != null && cursorId != null) {
+            sql.append("""
+                     AND (
+                       p.published_at < :cursorPublishedAt
+                       OR (p.published_at = :cursorPublishedAt AND p.id < :cursorId)
+                     )
+                    """);
+        }
+        sql.append(" ORDER BY p.published_at DESC, p.id DESC LIMIT :limit");
+
+        Query query = entityManager.createNativeQuery(sql.toString(), PostEntity.class);
+        query.setParameter("limit", limit);
+        if (keyword != null && !keyword.isBlank()) {
+            query.setParameter("keyword", "%" + keyword.trim().toLowerCase() + "%");
+        }
+        if (categoryId != null) {
+            query.setParameter("categoryId", categoryId);
+        }
+        if (cursorPublishedAt != null && cursorId != null) {
+            query.setParameter("cursorPublishedAt", cursorPublishedAt);
+            query.setParameter("cursorId", cursorId);
+        }
+        return query.getResultList();
+    }
 }

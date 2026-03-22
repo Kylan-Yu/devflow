@@ -40,6 +40,7 @@ public class AdminBootstrapRunner implements ApplicationRunner {
         if (displayName == null || displayName.isBlank()) {
             displayName = username;
         }
+        final String finalDisplayName = displayName;
 
         adminUserRepository.findByUsernameIgnoreCase(username).ifPresentOrElse(
                 existing -> {
@@ -49,7 +50,7 @@ public class AdminBootstrapRunner implements ApplicationRunner {
                     AdminUserEntity admin = new AdminUserEntity();
                     admin.setUsername(username.trim());
                     admin.setPasswordHash(passwordEncoder.encode(password));
-                    admin.setDisplayName(displayName.trim());
+                    admin.setDisplayName(finalDisplayName.trim());
                     admin.setStatus(AdminStatus.ACTIVE);
                     admin.setCreatedAt(now);
                     admin.setUpdatedAt(now);

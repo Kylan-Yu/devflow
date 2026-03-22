@@ -15,7 +15,7 @@ export default function LanguageSwitcher() {
       <label htmlFor="lang-select">{t('common.language')}</label>
       <select id="lang-select" value={i18n.language} onChange={(event) => onChange(event.target.value)}>
         <option value="en-US">English</option>
-        <option value="zh-CN">中文</option>
+        <option value="zh-CN">{'\u4e2d\u6587'}</option>
       </select>
     </div>
   );

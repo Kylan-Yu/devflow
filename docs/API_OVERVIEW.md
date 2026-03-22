@@ -1,45 +1,39 @@
-# API Overview | API 总览
+# API Overview
 
-## 1. API Style | API 风格
+## API Style | API 风格
 **EN**
 - Base path: `/api/v1`
-- Unified response model:
-  - `code`
-  - `message`
-  - `data`
-  - `traceId`
-- Backend returns stable message codes; frontend maps localized text.
+- Unified response model: `code`, `message`, `data`, `traceId`
+- Backend returns stable message codes and the frontend maps localized text
 
 **中文**
 - 基础路径：`/api/v1`
-- 统一响应结构：
-  - `code`
-  - `message`
-  - `data`
-  - `traceId`
-- 后端返回稳定 message code，前端负责本地化文案映射。
+- 统一响应结构：`code`、`message`、`data`、`traceId`
+- 后端返回稳定的 message code，前端负责本地化文案映射
 
-## 2. Public/User APIs | 用户侧 API
+## User-Facing APIs | 用户侧接口
+
 ### Auth
 - `POST /auth/register`
 - `POST /auth/login`
 - `POST /auth/refresh`
 - `POST /auth/logout`
 
-### User
+### User Profile
 - `GET /users/{id}`
 - `GET /users/me`
 - `PUT /users/me`
 - `POST /users/{id}/follow`
 - `DELETE /users/{id}/follow`
 
-### Post / Feed
+### Feed and Posts
+- `GET /feed/latest`
+- `GET /feed/hot`
+- `GET /search/posts`
 - `POST /posts`
 - `PUT /posts/{id}`
 - `DELETE /posts/{id}`
 - `GET /posts/{id}`
-- `GET /feed/latest`
-- `GET /feed/hot`
 - `GET /users/{id}/posts`
 
 ### Interaction
@@ -56,43 +50,58 @@
 - `GET /notifications/unread-count`
 - `PATCH /notifications/{id}/read`
 - `PATCH /notifications/read-all`
-- WebSocket: `/ws/notifications?userId={id}`
+- WebSocket: `/ws/notifications?token={accessToken}`
 
-## 3. Admin APIs | 管理端 API
+### Media
+- `POST /media/avatar`
+- `POST /media/post-cover`
+
+### Report
+- `POST /posts/{id}/reports`
+- `POST /users/{id}/reports`
+- `GET /reports/me`
+
+## Admin APIs | 管理端接口
 - `POST /admin/auth/login`
-- More moderation/report/admin APIs are planned in next phase.
-- 下一阶段将完善审核、举报处理与管理端更多能力。
+- `GET /admin/overview`
+- `GET /admin/users`
+- `PATCH /admin/users/{id}/status`
+- `GET /admin/posts`
+- `PATCH /admin/posts/{id}/status`
+- `GET /admin/reports`
+- `PATCH /admin/reports/{id}`
+- `GET /admin/audit-logs`
 
-## 4. Caching Coverage | 缓存覆盖范围
+## Caching Coverage | 缓存覆盖范围
 **EN**
 - Cached endpoints:
-  - `GET /feed/latest` (first page)
-  - `GET /feed/hot` (first page)
+  - `GET /feed/latest` first page
+  - `GET /feed/hot` first page
   - `GET /posts/{id}`
   - `GET /notifications/unread-count`
   - `GET /users/{id}`
   - `GET /users/me`
-- Cache keys follow prefix: `devflow:cache:*`
+- Cache keys use the prefix `devflow:cache:*`
 
 **中文**
 - 已缓存接口：
-  - `GET /feed/latest`（首屏）
-  - `GET /feed/hot`（首屏）
+  - `GET /feed/latest` 首屏
+  - `GET /feed/hot` 首屏
   - `GET /posts/{id}`
   - `GET /notifications/unread-count`
   - `GET /users/{id}`
   - `GET /users/me`
-- 缓存 key 统一前缀：`devflow:cache:*`
+- 缓存 key 统一使用前缀 `devflow:cache:*`
 
-## 5. Sync vs Async | 同步与异步边界
+## Sync vs Async | 同步与异步边界
 **EN**
-- Sync: core CRUD and read APIs.
-- Async: interaction-to-notification side effects via RabbitMQ + consumer + WebSocket push.
+- Sync: auth, profile, feed, post CRUD, search, report submission, and moderation reads/writes
+- Async: interaction-to-notification side effects through RabbitMQ plus WebSocket push
 
 **中文**
-- 同步：核心读写与查询接口。  
-- 异步：互动后通知副作用链路（RabbitMQ + 消费者 + WebSocket 推送）。  
+- 同步：认证、资料、信息流、搜索、帖子 CRUD、举报提交和后台治理读写
+- 异步：互动行为触发通知副作用，通过 RabbitMQ 和 WebSocket 链路完成
 
-## 6. OpenAPI Entry | OpenAPI 入口
+## OpenAPI Entry | OpenAPI 入口
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`

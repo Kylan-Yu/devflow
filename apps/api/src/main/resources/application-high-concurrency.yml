@@ -1,0 +1,175 @@
+# 高并发配置文件 - 10000并发优化
+spring:
+  application:
+    name: devflow-api-high-concurrency
+  
+  # 数据库连接池优化
+  datasource:
+    hikari:
+      maximum-pool-size: 100
+      minimum-idle: 20
+      idle-timeout: 300000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+      validation-timeout: 5000
+      pool-name: HighConcurrencyHikariPool
+      
+  # JPA优化
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+      properties:
+        hibernate:
+          format_sql: false
+          use_sql_comments: false
+          jdbc:
+            batch_size: 100
+            order_inserts: true
+            order_updates: true
+            batch_versioned_data: true
+          connection:
+            provider_disables_autocommit: true
+          cache:
+            use_second_level_cache: false
+            use_query_cache: false
+          generate_statistics: false
+          session:
+            events:
+              log:
+                jdbc:
+                  bind: false
+
+  # RabbitMQ高并发配置
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: devflow
+    password: devflow
+    virtual-host: /
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 3
+        max-interval: 10000
+        multiplier: 2
+    listener:
+      simple:
+        acknowledge-mode: manual
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          max-interval: 10000
+          multiplier: 2
+        concurrency: 10
+        max-concurrency: 20
+        prefetch: 50
+
+  # Redis高并发配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 5000
+      lettuce:
+        pool:
+          max-active: 50
+          max-idle: 20
+          min-idle: 5
+          max-wait: 3000
+        shutdown-timeout: 100ms
+      cluster:
+        refresh:
+          adaptive: true
+          period: 30s
+
+# 服务器优化
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 500
+      min-spare: 50
+    max-connections: 10000
+    accept-count: 10000
+    connection-timeout: 20000
+    max-http-form-post-size: 10MB
+    max-swallow-size: 10MB
+
+# DevFlow特定配置
+devflow:
+  security:
+    jwt:
+      issuer: devflow-api-high-concurrency
+      secret: devflow-phase9-super-secret-key-for-high-concurrency-2026
+      access-token-minutes: 15
+      refresh-token-days: 30
+  
+  # 缓存优化配置
+  cache:
+    redis:
+      enabled: true
+      hot-threshold: 100
+      batch-size: 200
+      flush-interval: 5s
+      max-queue-size: 10000
+      
+  # 高并发计数器配置
+  counters:
+    batch-size: 100
+    flush-interval: 5s
+    lock-timeout: 10s
+    async-executor-threads: 8
+    
+  # 性能监控
+  monitoring:
+    enabled: true
+    metrics-interval: 30s
+    slow-query-threshold: 1000ms
+    cache-hit-ratio-threshold: 0.8
+    
+  # 限流配置
+  rate-limiting:
+    enabled: true
+    requests-per-minute: 30000
+    burst-capacity: 5000
+    
+  # 熔断器配置
+  circuit-breaker:
+    enabled: true
+    failure-threshold: 50
+    timeout: 30s
+    recovery-timeout: 60s
+
+# 日志配置
+logging:
+  level:
+    com.devflow.api: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    com.zaxxer.hikari: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/devflow-high-concurrency.log
+    max-size: 100MB
+    max-history: 30
+
+# 管理端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true

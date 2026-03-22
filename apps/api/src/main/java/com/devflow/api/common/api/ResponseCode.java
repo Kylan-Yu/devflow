@@ -33,7 +33,15 @@ public enum ResponseCode {
     FOLLOW_SELF_FORBIDDEN("FOLLOW_SELF_FORBIDDEN", "interaction.follow_self_forbidden", HttpStatus.BAD_REQUEST),
     USER_ALREADY_FOLLOWING("USER_ALREADY_FOLLOWING", "interaction.user_already_following", HttpStatus.CONFLICT),
     USER_NOT_FOLLOWING("USER_NOT_FOLLOWING", "interaction.user_not_following", HttpStatus.NOT_FOUND),
-    NOTIFICATION_NOT_FOUND("NOTIFICATION_NOT_FOUND", "notification.not_found", HttpStatus.NOT_FOUND);
+    NOTIFICATION_NOT_FOUND("NOTIFICATION_NOT_FOUND", "notification.not_found", HttpStatus.NOT_FOUND),
+    REPORT_NOT_FOUND("REPORT_NOT_FOUND", "report.not_found", HttpStatus.NOT_FOUND),
+    REPORT_ALREADY_PENDING("REPORT_ALREADY_PENDING", "report.already_pending", HttpStatus.CONFLICT),
+    REPORT_SELF_FORBIDDEN("REPORT_SELF_FORBIDDEN", "report.self_forbidden", HttpStatus.BAD_REQUEST),
+    REPORT_INVALID_REVIEW("REPORT_INVALID_REVIEW", "report.invalid_review", HttpStatus.BAD_REQUEST),
+    REPORT_ALREADY_REVIEWED("REPORT_ALREADY_REVIEWED", "report.already_reviewed", HttpStatus.CONFLICT),
+    MEDIA_INVALID_FILE("MEDIA_INVALID_FILE", "media.invalid_file", HttpStatus.BAD_REQUEST),
+    MEDIA_FILE_TOO_LARGE("MEDIA_FILE_TOO_LARGE", "media.file_too_large", HttpStatus.BAD_REQUEST),
+    MEDIA_UPLOAD_FAILED("MEDIA_UPLOAD_FAILED", "media.upload_failed", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String code;
     private final String message;

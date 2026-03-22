@@ -58,11 +58,11 @@ public class SecurityConfig {
                                 "/api/v1/tags",
                                 "/api/v1/feed/latest",
                                 "/api/v1/feed/hot",
+                                "/api/v1/search/posts",
                                 "/api/v1/posts/*",
                                 "/api/v1/posts/*/comments",
                                 "/api/v1/users/*",
-                                "/api/v1/users/*/posts",
-                                "/ws/**").permitAll()
+                                "/api/v1/users/*/posts").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -77,7 +77,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174"));
+        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:61340", "http://127.0.0.1:61341"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Trace-Id"));
         config.setAllowCredentials(true);

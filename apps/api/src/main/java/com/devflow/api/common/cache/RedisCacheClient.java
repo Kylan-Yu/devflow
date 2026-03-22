@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 import java.util.Optional;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -78,6 +80,30 @@ public class RedisCacheClient {
             return redisTemplate.opsForValue().get(key);
         } catch (Exception ignored) {
             return null;
+        }
+    }
+
+    /**
+     * 原子性设置值，仅当key不存在时才设置
+     */
+    public Boolean setIfAbsent(String key, String value, Duration ttl) {
+        try {
+            return redisTemplate.opsForValue().setIfAbsent(key, value, ttl);
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    /**
+     * 执行Lua脚本
+     */
+    public Long eval(String luaScript, int keyCount, String... keysAndArgs) {
+        try {
+            DefaultRedisScript<Long> script = new DefaultRedisScript<>(luaScript, Long.class);
+            return redisTemplate.execute(script, List.of(keysAndArgs).subList(0, keyCount), 
+                    List.of(keysAndArgs).subList(keyCount, keysAndArgs.length));
+        } catch (Exception ignored) {
+            return 0L;
         }
     }
 }

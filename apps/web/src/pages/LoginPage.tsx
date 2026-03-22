@@ -6,7 +6,7 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import { saveSession } from '../utils/authStorage';
 
 export default function LoginPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -22,6 +22,9 @@ export default function LoginPage() {
     try {
       const session = await login({ email, password });
       saveSession(session.tokens.accessToken, session.tokens.refreshToken, session.user.id);
+      if (session.user.preferredLanguage !== i18n.language) {
+        await i18n.changeLanguage(session.user.preferredLanguage);
+      }
       setMessage(t('messages.auth.login_success'));
       navigate('/');
     } catch (error) {

@@ -1,12 +1,15 @@
 import { FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { adminLogin } from '../api/adminAuth';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import { useAdminAccessToken } from '../hooks/useAdminAccessToken';
+import { saveAdminSession } from '../utils/adminSession';
 
 export default function AdminLoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const accessToken = useAdminAccessToken();
 
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('Admin@123456');
@@ -20,8 +23,7 @@ export default function AdminLoginPage() {
 
     try {
       const session = await adminLogin({ username, password });
-      localStorage.setItem('devflow.admin.accessToken', session.accessToken);
-      localStorage.setItem('devflow.admin.displayName', session.displayName);
+      saveAdminSession(session.accessToken, session.adminId, session.displayName);
       setMessage(t('messages.admin.login_success'));
       navigate('/dashboard');
     } catch (error) {
@@ -31,6 +33,10 @@ export default function AdminLoginPage() {
       setSubmitting(false);
     }
   };
+
+  if (accessToken) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <main className="page-shell auth-shell">

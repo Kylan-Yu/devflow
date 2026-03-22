@@ -13,11 +13,26 @@ spring:
     redis:
       host: localhost
       port: 6379
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+      direct:
+        auto-startup: false
 
 devflow:
+  security:
+    jwt:
+      issuer: devflow-api-test
+      secret: devflow-test-jwt-secret-key-with-sufficient-length-2026
+      access-token-minutes: 15
+      refresh-token-days: 30
   bootstrap:
     admin:
       enabled: false
   cache:
     redis:
+      enabled: false
+  storage:
+    minio:
       enabled: false

@@ -1,17 +1,34 @@
-# Docs Index | 文档索引
+# Docs Index
 
-## Portfolio-Focused Docs | 作品集展示文档
+This folder contains portfolio-facing architecture and delivery notes for DevFlow.  
+这个目录收录了 DevFlow 的架构说明、部署说明和面试展示文档。
+
+## Portfolio Docs | 作品集展示文档
 - [INTERVIEW_HIGHLIGHTS.md](./INTERVIEW_HIGHLIGHTS.md)
 - [ARCHITECTURE_DIAGRAM.md](./ARCHITECTURE_DIAGRAM.md)
-- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 - [API_OVERVIEW.md](./API_OVERVIEW.md)
-
-## Existing Technical Notes | 既有技术说明
-- [Architecture_Summary.md](./Architecture_Summary.md)
 - [Deployment_Guide.md](./Deployment_Guide.md)
+
+## Technical Notes | 技术说明
+- [Architecture_Summary.md](./Architecture_Summary.md)
 - [Performance_Notes.md](./Performance_Notes.md)
 
-## Suggested Screenshot Folder | 建议截图目录
+## Suggested Demo Assets | 建议准备的演示素材
 - `docs/assets/screenshots/`
-- Recommended captures: home, feed, post detail, notifications, admin dashboard, swagger
-- 建议截图点位：首页、信息流、帖子详情、通知、管理端仪表盘、Swagger
+- Recommended screenshots:
+  - home page
+  - latest feed
+  - post detail
+  - notifications
+  - profile settings
+  - admin dashboard
+  - Swagger UI
+
+建议截图内容：
+- 首页
+- 最新流
+- 帖子详情
+- 通知页
+- 资料设置页
+- 管理后台
+- Swagger 文档页

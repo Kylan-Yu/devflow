@@ -22,4 +22,8 @@ public final class CacheKeyBuilder {
     public static String userProfile(Long userId) {
         return PREFIX + "user:profile:" + userId;
     }
+
+    public static String postCounter(Long postId) {
+        return PREFIX + "post:counter:" + postId;
+    }
 }

@@ -33,6 +33,9 @@ export default function RegisterPage() {
         preferredLanguage
       });
       saveSession(session.tokens.accessToken, session.tokens.refreshToken, session.user.id);
+      if (session.user.preferredLanguage !== i18n.language) {
+        await i18n.changeLanguage(session.user.preferredLanguage);
+      }
       setMessage(t('messages.auth.register_success'));
       navigate('/');
     } catch (error) {
@@ -89,7 +92,7 @@ export default function RegisterPage() {
             onChange={(event) => setPreferredLanguage(event.target.value as LanguageValue)}
           >
             <option value="en-US">English</option>
-            <option value="zh-CN">中文</option>
+            <option value="zh-CN">{'\u4e2d\u6587'}</option>
           </select>
         </label>
 

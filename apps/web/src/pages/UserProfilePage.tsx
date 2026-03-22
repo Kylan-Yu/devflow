@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getUserProfile } from '../api/users';
 import { listUserPosts } from '../api/posts';
@@ -7,7 +7,9 @@ import type { PostSummary } from '../types/post';
 import type { PublicUserProfile } from '../api/users';
 import PostCard from '../components/PostCard';
 import { followUser, getFollowStatus, unfollowUser } from '../api/interactions';
-import { getCurrentUserId } from '../utils/authStorage';
+import { useCurrentUserId } from '../hooks/useCurrentUserId';
+import ReportComposer from '../components/ReportComposer';
+import { reportUser } from '../api/reports';
 
 export default function UserProfilePage() {
   const { t } = useTranslation();
@@ -20,7 +22,7 @@ export default function UserProfilePage() {
   const [message, setMessage] = useState<string | null>(null);
   const [following, setFollowing] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  const currentUserId = getCurrentUserId();
+  const currentUserId = useCurrentUserId();
 
   useEffect(() => {
     const userId = Number(id);
@@ -91,36 +93,60 @@ export default function UserProfilePage() {
       {profile ? (
         <section className="profile-card">
           <header className="top-row">
-            <h2>{profile.displayName}</h2>
-            {currentUserId && currentUserId !== profile.id ? (
-              <button
-                type="button"
-                className="btn btn-secondary"
-                disabled={actionLoading}
-                onClick={async () => {
-                  setActionLoading(true);
-                  setMessage(null);
-                  try {
-                    if (following) {
-                      const result = await unfollowUser(profile.id);
-                      setFollowing(result.following);
-                    } else {
-                      const result = await followUser(profile.id);
-                      setFollowing(result.following);
+            <div className="profile-header-block">
+              {profile.avatarUrl ? (
+                <img className="avatar-preview avatar-preview-small" src={profile.avatarUrl} alt={profile.displayName} />
+              ) : (
+                <div className="avatar-placeholder avatar-preview-small">
+                  {(profile.displayName || profile.username || 'D').slice(0, 1).toUpperCase()}
+                </div>
+              )}
+              <div>
+                <h2>{profile.displayName}</h2>
+                <p>@{profile.username}</p>
+              </div>
+            </div>
+            {currentUserId === profile.id ? (
+              <Link to="/settings" className="btn btn-secondary">
+                {t('profile.edit_profile')}
+              </Link>
+            ) : currentUserId ? (
+              <div className="stacked-actions">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  disabled={actionLoading}
+                  onClick={async () => {
+                    setActionLoading(true);
+                    setMessage(null);
+                    try {
+                      if (following) {
+                        const result = await unfollowUser(profile.id);
+                        setFollowing(result.following);
+                      } else {
+                        const result = await followUser(profile.id);
+                        setFollowing(result.following);
+                      }
+                    } catch (error) {
+                      const text = error instanceof Error ? error.message : 'common.request_failed';
+                      setMessage(t(`messages.${text}`, { defaultValue: text }));
+                    } finally {
+                      setActionLoading(false);
                     }
-                  } catch (error) {
-                    const text = error instanceof Error ? error.message : 'common.request_failed';
-                    setMessage(t(`messages.${text}`, { defaultValue: text }));
-                  } finally {
-                    setActionLoading(false);
-                  }
-                }}
-              >
-                {following ? t('profile.unfollow') : t('profile.follow')}
-              </button>
+                  }}
+                >
+                  {following ? t('profile.unfollow') : t('profile.follow')}
+                </button>
+                <ReportComposer
+                  triggerLabel={t('report.report_user')}
+                  title={t('report.report_user')}
+                  onSubmit={async (payload) => {
+                    await reportUser(profile.id, payload);
+                  }}
+                />
+              </div>
             ) : null}
           </header>
-          <p>@{profile.username}</p>
           {profile.bio ? <p>{profile.bio}</p> : <p className="hint-text">{t('profile.no_bio')}</p>}
         </section>
       ) : null}

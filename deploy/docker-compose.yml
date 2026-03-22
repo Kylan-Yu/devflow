@@ -101,6 +101,12 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: devflow
       SPRING_RABBITMQ_PASSWORD: devflow
+      DEVFLOW_STORAGE_MINIO_ENABLED: "true"
+      DEVFLOW_STORAGE_MINIO_ENDPOINT: http://minio:9000
+      DEVFLOW_STORAGE_MINIO_ACCESS_KEY: devflow
+      DEVFLOW_STORAGE_MINIO_SECRET_KEY: devflow123
+      DEVFLOW_STORAGE_MINIO_BUCKET: devflow-public
+      DEVFLOW_STORAGE_MINIO_PUBLIC_BASE_URL: http://localhost:9000/devflow-public
     ports:
       - "8080:8080"
     networks:

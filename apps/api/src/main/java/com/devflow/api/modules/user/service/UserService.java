@@ -47,6 +47,9 @@ public class UserService {
         if (request.bio() != null) {
             user.setBio(request.bio().trim());
         }
+        if (request.avatarUrl() != null) {
+            user.setAvatarUrl(trimNullable(request.avatarUrl()));
+        }
         if (request.preferredLanguage() != null) {
             user.setPreferredLanguage(request.preferredLanguage());
         }
@@ -73,5 +76,14 @@ public class UserService {
         // EN: User profile basic info changes infrequently, so a longer TTL is safe.
         redisCacheClient.set(cacheKey, profile, USER_PROFILE_CACHE_TTL);
         return profile;
+    }
+
+    private String trimNullable(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

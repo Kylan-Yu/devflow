@@ -14,7 +14,9 @@ import {
 } from '../api/interactions';
 import type { PostDetail } from '../types/post';
 import type { CommentItem, PostInteractionSummary } from '../types/interaction';
-import { getCurrentUserId } from '../utils/authStorage';
+import { useCurrentUserId } from '../hooks/useCurrentUserId';
+import ReportComposer from '../components/ReportComposer';
+import { reportPost } from '../api/reports';
 
 function formatTime(value: string): string {
   const date = new Date(value);
@@ -25,10 +27,10 @@ function formatTime(value: string): string {
 }
 
 export default function PostDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const currentUserId = getCurrentUserId();
+  const currentUserId = useCurrentUserId();
 
   const [post, setPost] = useState<PostDetail | null>(null);
   const [comments, setComments] = useState<CommentItem[]>([]);
@@ -190,6 +192,8 @@ export default function PostDetailPage() {
     );
   }
 
+  const categoryName = i18n.language === 'zh-CN' ? post.category.nameZh : post.category.nameEn;
+
   return (
     <main className="page-shell">
       <header className="top-row">
@@ -207,13 +211,11 @@ export default function PostDetailPage() {
       </header>
 
       <p className="hint-text">
-        {t('post.by_author')} <Link to={`/users/${post.author.id}`}>{post.author.displayName}</Link> ·{' '}
+        {t('post.by_author')} <Link to={`/users/${post.author.id}`}>{post.author.displayName}</Link> |{' '}
         {formatTime(post.publishedAt)}
       </p>
 
-      <p className="hint-text">
-        {post.category.nameEn} / {post.category.nameZh}
-      </p>
+      <p className="hint-text">{categoryName}</p>
 
       <div className="tag-row">
         {post.tags.map((tag) => (
@@ -222,6 +224,10 @@ export default function PostDetailPage() {
           </span>
         ))}
       </div>
+
+      {post.coverImageUrl ? (
+        <img className="cover-preview cover-preview-detail" src={post.coverImageUrl} alt={post.title} />
+      ) : null}
 
       <article className="post-detail-body">{post.content}</article>
 
@@ -239,10 +245,20 @@ export default function PostDetailPage() {
         </button>
       </div>
 
+      {currentUserId && !canEdit ? (
+        <ReportComposer
+          triggerLabel={t('report.report_post')}
+          title={t('report.report_post')}
+          onSubmit={async (payload) => {
+            await reportPost(post.id, payload);
+          }}
+        />
+      ) : null}
+
       {!currentUserId ? <p className="hint-text">{t('post.login_required')}</p> : null}
 
       <p className="hint-text">
-        {t('interaction.comment_count')}: {post.commentCount} · hot {post.hotScore.toFixed(4)}
+        {t('interaction.comment_count')}: {post.commentCount} | hot {post.hotScore.toFixed(4)}
       </p>
 
       {currentUserId ? (

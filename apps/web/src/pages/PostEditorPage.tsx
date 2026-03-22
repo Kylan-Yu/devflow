@@ -2,12 +2,13 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { listCategories, listTags } from '../api/catalog';
+import { uploadPostCoverImage } from '../api/media';
 import { createPost, getPostDetail, updatePost } from '../api/posts';
+import { useCurrentUserId } from '../hooks/useCurrentUserId';
 import type { CategoryItem, TagItem } from '../types/post';
-import { getAccessToken } from '../utils/authStorage';
 
 export default function PostEditorPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id?: string }>();
   const editingPostId = useMemo(() => (id ? Number(id) : null), [id]);
@@ -20,9 +21,11 @@ export default function PostEditorPage() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const hasSession = !!getAccessToken();
+  const currentUserId = useCurrentUserId();
+  const hasSession = currentUserId !== null;
 
   useEffect(() => {
     const loadCatalog = async () => {
@@ -61,6 +64,25 @@ export default function PostEditorPage() {
     setSelectedTagIds((prev) =>
       prev.includes(tagId) ? prev.filter((item) => item !== tagId) : [...prev, tagId]
     );
+  };
+
+  const onCoverSelected = async (file: File | null) => {
+    if (!file) {
+      return;
+    }
+
+    setUploadingCover(true);
+    setMessage(null);
+    try {
+      const uploaded = await uploadPostCoverImage(file);
+      setCoverImageUrl(uploaded.url);
+      setMessage(t('messages.media.cover_upload_success'));
+    } catch (error) {
+      const text = error instanceof Error ? error.message : 'common.request_failed';
+      setMessage(t(`messages.${text}`, { defaultValue: text }));
+    } finally {
+      setUploadingCover(false);
+    }
   };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -123,7 +145,7 @@ export default function PostEditorPage() {
           >
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
-                {category.nameEn} / {category.nameZh}
+                {i18n.language === 'zh-CN' ? category.nameZh : category.nameEn}
               </option>
             ))}
           </select>
@@ -133,6 +155,26 @@ export default function PostEditorPage() {
           {t('post.cover_image')}
           <input value={coverImageUrl} onChange={(event) => setCoverImageUrl(event.target.value)} />
         </label>
+
+        <label>
+          {t('post.cover_upload')}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(event) => {
+              void onCoverSelected(event.target.files?.[0] ?? null);
+              event.currentTarget.value = '';
+            }}
+            disabled={uploadingCover || loading}
+          />
+        </label>
+        <p className="form-help">
+          {uploadingCover ? t('common.loading') : t('post.cover_upload_hint')}
+        </p>
+
+        {coverImageUrl ? (
+          <img className="cover-preview" src={coverImageUrl} alt={t('post.cover_preview')} />
+        ) : null}
 
         <label>
           {t('post.content')}
@@ -161,7 +203,7 @@ export default function PostEditorPage() {
           </div>
         </fieldset>
 
-        <button className="btn btn-primary" type="submit" disabled={loading}>
+        <button className="btn btn-primary" type="submit" disabled={loading || uploadingCover}>
           {loading ? t('common.loading') : editingPostId ? t('post.save') : t('post.publish')}
         </button>
       </form>

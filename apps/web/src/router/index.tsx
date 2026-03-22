@@ -8,6 +8,9 @@ import PostDetailPage from '../pages/PostDetailPage';
 import PostEditorPage from '../pages/PostEditorPage';
 import UserProfilePage from '../pages/UserProfilePage';
 import NotificationsPage from '../pages/NotificationsPage';
+import ProfileSettingsPage from '../pages/ProfileSettingsPage';
+import MyReportsPage from '../pages/MyReportsPage';
+import SearchPage from '../pages/SearchPage';
 
 export const webRouter = createBrowserRouter([
   {
@@ -49,5 +52,17 @@ export const webRouter = createBrowserRouter([
   {
     path: '/notifications',
     element: <NotificationsPage />
+  },
+  {
+    path: '/settings',
+    element: <ProfileSettingsPage />
+  },
+  {
+    path: '/search',
+    element: <SearchPage />
+  },
+  {
+    path: '/reports/me',
+    element: <MyReportsPage />
   }
 ]);

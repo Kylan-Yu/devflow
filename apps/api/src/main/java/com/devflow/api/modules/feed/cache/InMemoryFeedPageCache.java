@@ -7,11 +7,11 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnMissingBean(FeedPageCache.class)
+@ConditionalOnProperty(name = "devflow.cache.redis.enabled", havingValue = "false", matchIfMissing = true)
 public class InMemoryFeedPageCache implements FeedPageCache {
 
     private final ConcurrentMap<String, CacheEntry> store = new ConcurrentHashMap<>();
@@ -37,6 +37,11 @@ public class InMemoryFeedPageCache implements FeedPageCache {
     @Override
     public void evictAll() {
         store.clear();
+    }
+
+    @Override
+    public void evict(String cacheKey) {
+        store.remove(cacheKey);
     }
 
     private record CacheEntry(CursorPageResponse<PostSummaryResponse> value, Instant expiresAt) {

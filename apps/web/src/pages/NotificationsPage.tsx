@@ -12,7 +12,7 @@ import type {
   NotificationPushMessage,
   NotificationTargetType
 } from '../types/notification';
-import { getCurrentUserId } from '../utils/authStorage';
+import { useCurrentUserId } from '../hooks/useCurrentUserId';
 import { useNotificationSocket } from '../hooks/useNotificationSocket';
 
 function formatTime(value: string): string {
@@ -48,7 +48,7 @@ function targetText(targetType: NotificationTargetType): string {
 
 export default function NotificationsPage() {
   const { t } = useTranslation();
-  const userId = getCurrentUserId();
+  const userId = useCurrentUserId();
 
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -164,7 +164,7 @@ export default function NotificationsPage() {
                 })}
               </p>
               <p className="hint-text">
-                {t(targetText(item.targetType))} · {formatTime(item.createdAt)}
+                {t(targetText(item.targetType))} | {formatTime(item.createdAt)}
               </p>
             </div>
 

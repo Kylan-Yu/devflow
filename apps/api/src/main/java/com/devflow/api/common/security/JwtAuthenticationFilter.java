@@ -1,6 +1,10 @@
 package com.devflow.api.common.security;
 
+import com.devflow.api.modules.auth.entity.AdminStatus;
+import com.devflow.api.modules.auth.repository.AdminUserRepository;
 import com.devflow.api.modules.auth.service.JwtService;
+import com.devflow.api.modules.user.entity.UserStatus;
+import com.devflow.api.modules.user.repository.UserRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,19 +23,31 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final AdminUserRepository adminUserRepository;
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    public JwtAuthenticationFilter(JwtService jwtService,
+                                   UserRepository userRepository,
+                                   AdminUserRepository adminUserRepository) {
         this.jwtService = jwtService;
+        this.userRepository = userRepository;
+        this.adminUserRepository = adminUserRepository;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String token = resolveBearerToken(request);
+        String token = resolveAccessToken(request);
         if (token != null) {
             try {
                 JwtService.JwtPayload payload = jwtService.parseAccessToken(token);
+                if (!isActivePrincipal(payload)) {
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
                 AuthenticatedPrincipal principal = new AuthenticatedPrincipal(
                         payload.subjectId(),
                         payload.principalType(),
@@ -51,11 +67,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String resolveBearerToken(HttpServletRequest request) {
+    private String resolveAccessToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
-        if (!StringUtils.hasText(authorization) || !authorization.startsWith("Bearer ")) {
+        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+            return authorization.substring(7);
+        }
+
+        if (!"/ws/notifications".equals(request.getRequestURI())) {
             return null;
         }
-        return authorization.substring(7);
+
+        String token = request.getParameter("token");
+        if (!StringUtils.hasText(token)) {
+            return null;
+        }
+        return token;
+    }
+
+    private boolean isActivePrincipal(JwtService.JwtPayload payload) {
+        if (payload.principalType() == PrincipalType.USER) {
+            return userRepository.findByIdAndStatus(payload.subjectId(), UserStatus.ACTIVE).isPresent();
+        }
+        if (payload.principalType() == PrincipalType.ADMIN) {
+            return adminUserRepository.findByIdAndStatus(payload.subjectId(), AdminStatus.ACTIVE).isPresent();
+        }
+        return false;
     }
 }
