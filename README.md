@@ -6,6 +6,10 @@
 
 ---
 
+**📚 Other Versions:** [🇺🇸 English Only](README_EN.md) | [🇨🇳 中文 Only](README_CN.md)
+
+---
+
 </div>
 
 ---
