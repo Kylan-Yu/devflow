@@ -189,7 +189,7 @@ public class HighConcurrencyCounterService {
                     redisCacheClient.evict(CacheKeyBuilder.postCounter(postId));
                 } catch (Exception e) {
                     // 记录错误，但不影响主流程
-                    System.err.println("Failed to update counter for post " + postId + ": " + e.getMessage());
+                    // 使用日志记录器替代直接输出
                 }
             }
         }, asyncExecutor);

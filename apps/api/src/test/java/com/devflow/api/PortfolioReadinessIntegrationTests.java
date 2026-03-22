@@ -167,7 +167,7 @@ class PortfolioReadinessIntegrationTests {
                                 .content("""
                                         {
                                           "reason": "SPAM",
-                                          "detail": "This looks like promotional spam for testing the moderation flow."
+                                          "detail": "Inappropriate content that violates community guidelines."
                                         }
                                         """)
                 )
@@ -225,12 +225,12 @@ class PortfolioReadinessIntegrationTests {
         Long postId = createPost(author.accessToken(), author.username(), categoryId);
 
         mockMvc.perform(get("/api/v1/search/posts")
-                        .param("keyword", "Moderation flow test")
+                        .param("keyword", "Community Discussion")
                         .param("categoryId", String.valueOf(categoryId))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.items[0].id").value(postId))
-                .andExpect(jsonPath("$.data.items[0].title").value("Moderation flow test by " + author.username()));
+                .andExpect(jsonPath("$.data.items[0].title").value("Community Discussion by " + author.username()));
     }
 
     @Test
@@ -254,11 +254,11 @@ class PortfolioReadinessIntegrationTests {
                           updated_at
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
-                "legacy" + suffix,
-                "legacy-" + suffix + "@devflow.test",
-                "hash",
-                "Legacy User " + suffix,
-                "Inserted with raw SQL language code.",
+                "migrated" + suffix,
+                "migrated-" + suffix + "@devflow.local",
+                "bcrypt_encoded_hash_string",
+                "Migrated User " + suffix,
+                "Software developer passionate about building scalable applications.",
                 null,
                 "en-US",
                 "USER",
@@ -268,7 +268,7 @@ class PortfolioReadinessIntegrationTests {
                 now
         );
 
-        UserEntity loadedUser = userRepository.findByEmailIgnoreCase("legacy-" + suffix + "@devflow.test")
+        UserEntity loadedUser = userRepository.findByEmailIgnoreCase("migrated-" + suffix + "@devflow.local")
                 .orElseThrow();
 
         assertThat(loadedUser.getPreferredLanguage().value()).isEqualTo("en-US");
@@ -288,7 +288,7 @@ class PortfolioReadinessIntegrationTests {
                                 .content("""
                                         {
                                           "reason": "MISLEADING",
-                                          "detail": "This report exists to verify the admin audit trail."
+                                          "detail": "Content that appears to contain misleading information."
                                         }
                                         """)
                 )
@@ -331,7 +331,7 @@ class PortfolioReadinessIntegrationTests {
     private RegisteredSession registerUser() throws Exception {
         String suffix = UUID.randomUUID().toString().substring(0, 8);
         String username = "user" + suffix;
-        String email = suffix + "@devflow.test";
+        String email = suffix + "@devflow.local";
 
         MvcResult result = mockMvc.perform(
                         post("/api/v1/auth/register")
@@ -362,8 +362,8 @@ class PortfolioReadinessIntegrationTests {
         LocalDateTime now = LocalDateTime.now();
         AdminUserEntity admin = new AdminUserEntity();
         admin.setUsername("admin-" + UUID.randomUUID().toString().substring(0, 6));
-        admin.setPasswordHash("unused");
-        admin.setDisplayName("Test Admin");
+        admin.setPasswordHash("encoded_password_hash_for_admin_user");
+        admin.setDisplayName("System Administrator");
         admin.setStatus(AdminStatus.ACTIVE);
         admin.setCreatedAt(now);
         admin.setUpdatedAt(now);
@@ -379,8 +379,8 @@ class PortfolioReadinessIntegrationTests {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
-                                          "title": "Moderation flow test by %s",
-                                          "content": "This post exists to verify the admin moderation flow end to end.",
+                                          "title": "Community Discussion by %s",
+                                          "content": "Share thoughts and engage with the community on various topics.",
                                           "categoryId": %d,
                                           "tagIds": []
                                         }
@@ -398,9 +398,9 @@ class PortfolioReadinessIntegrationTests {
         LocalDateTime now = LocalDateTime.now();
 
         CategoryEntity category = new CategoryEntity();
-        category.setCode("test-" + suffix);
-        category.setNameZh("测试分类" + suffix);
-        category.setNameEn("Test Category " + suffix);
+        category.setCode("demo-" + suffix);
+        category.setNameZh("演示分类" + suffix);
+        category.setNameEn("Demo Category " + suffix);
         category.setStatus(CategoryStatus.ACTIVE);
         category.setSortOrder(99);
         category.setCreatedAt(now);
