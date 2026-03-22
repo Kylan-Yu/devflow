@@ -14,6 +14,8 @@ import com.devflow.api.modules.post.entity.TagEntity;
 import com.devflow.api.modules.post.repository.CategoryRepository;
 import com.devflow.api.modules.post.repository.PostTagRepository;
 import com.devflow.api.modules.post.repository.TagRepository;
+import com.devflow.api.modules.interaction.service.SimpleCounterService;
+import com.devflow.api.modules.interaction.entity.PostCounterEntity;
 import com.devflow.api.modules.user.entity.UserEntity;
 import com.devflow.api.modules.user.repository.UserRepository;
 import java.util.ArrayList;
@@ -36,17 +38,20 @@ public class PostViewService {
     private final PostTagRepository postTagRepository;
     private final UserRepository userRepository;
     private final PostScoreCalculator postScoreCalculator;
+    private final SimpleCounterService counterService;
 
     public PostViewService(CategoryRepository categoryRepository,
                            TagRepository tagRepository,
                            PostTagRepository postTagRepository,
                            UserRepository userRepository,
-                           PostScoreCalculator postScoreCalculator) {
+                           PostScoreCalculator postScoreCalculator,
+                           SimpleCounterService counterService) {
         this.categoryRepository = categoryRepository;
         this.tagRepository = tagRepository;
         this.postTagRepository = postTagRepository;
         this.userRepository = userRepository;
         this.postScoreCalculator = postScoreCalculator;
+        this.counterService = counterService;
     }
 
     @Transactional(readOnly = true)
@@ -87,6 +92,12 @@ public class PostViewService {
             throw new BusinessException(ResponseCode.CATEGORY_NOT_FOUND);
         }
 
+        // 从计数器表获取最新数据
+        PostCounterEntity counter = counterService.getPostCounter(post.getId());
+        int likeCount = counter.getLikeCount() != null ? counter.getLikeCount().intValue() : 0;
+        int commentCount = counter.getCommentCount() != null ? counter.getCommentCount().intValue() : 0;
+        int favoriteCount = counter.getFavoriteCount() != null ? counter.getFavoriteCount().intValue() : 0;
+
         PostAuthorResponse author = toAuthor(authorMap.get(post.getAuthorId()), post.getAuthorId());
         List<TagResponse> tags = tagMap.getOrDefault(post.getId(), List.of())
                 .stream()
@@ -103,11 +114,10 @@ public class PostViewService {
                 CategoryResponse.from(category),
                 tags,
                 post.getVisibility(),
-                post.getLikeCount(),
-                post.getCommentCount(),
-                post.getFavoriteCount(),
-                postScoreCalculator.calculateHotScore(
-                        post.getLikeCount(), post.getCommentCount(), post.getFavoriteCount(), post.getPublishedAt()),
+                likeCount,
+                commentCount,
+                favoriteCount,
+                postScoreCalculator.calculateHotScore(likeCount, commentCount, favoriteCount, post.getPublishedAt()),
                 post.getPublishedAt(),
                 post.getUpdatedAt()
         );
@@ -122,6 +132,12 @@ public class PostViewService {
             throw new BusinessException(ResponseCode.CATEGORY_NOT_FOUND);
         }
 
+        // 从计数器表获取最新数据
+        PostCounterEntity counter = counterService.getPostCounter(post.getId());
+        int likeCount = counter.getLikeCount() != null ? counter.getLikeCount().intValue() : 0;
+        int commentCount = counter.getCommentCount() != null ? counter.getCommentCount().intValue() : 0;
+        int favoriteCount = counter.getFavoriteCount() != null ? counter.getFavoriteCount().intValue() : 0;
+
         return new PostSummaryResponse(
                 post.getId(),
                 post.getTitle(),
@@ -130,11 +146,10 @@ public class PostViewService {
                 toAuthor(authorMap.get(post.getAuthorId()), post.getAuthorId()),
                 CategoryResponse.from(category),
                 tagMap.getOrDefault(post.getId(), List.of()).stream().map(TagResponse::from).toList(),
-                post.getLikeCount(),
-                post.getCommentCount(),
-                post.getFavoriteCount(),
-                postScoreCalculator.calculateHotScore(
-                        post.getLikeCount(), post.getCommentCount(), post.getFavoriteCount(), post.getPublishedAt()),
+                likeCount,
+                commentCount,
+                favoriteCount,
+                postScoreCalculator.calculateHotScore(likeCount, commentCount, favoriteCount, post.getPublishedAt()),
                 post.getPublishedAt()
         );
     }

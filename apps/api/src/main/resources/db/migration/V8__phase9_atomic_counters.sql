@@ -12,7 +12,7 @@ CREATE TABLE post_counters (
     version BIGINT NOT NULL DEFAULT 0,
     
     INDEX idx_counters_updated (updated_at),
-    INDEX idx_counters_hot (like_count + comment_count + favorite_count DESC, updated_at DESC)
+    INDEX idx_counters_hot (like_count, comment_count, favorite_count, updated_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 用户计数器表，用于统计和限流

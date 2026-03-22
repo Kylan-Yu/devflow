@@ -50,6 +50,26 @@ public interface PostCounterRepository extends JpaRepository<PostCounterEntity, 
     @Query("UPDATE PostCounterEntity pc SET pc.viewCount = pc.viewCount + 1, pc.updatedAt = CURRENT_TIMESTAMP WHERE pc.postId = :postId")
     int incrementViewCount(@Param("postId") Long postId);
 
+    // 批量原子性更新点赞数
+    @Modifying
+    @Query("UPDATE PostCounterEntity pc SET pc.likeCount = GREATEST(pc.likeCount + :delta, 0), pc.updatedAt = CURRENT_TIMESTAMP WHERE pc.postId = :postId")
+    int batchIncrementLikeCount(@Param("postId") Long postId, @Param("delta") int delta);
+
+    // 批量原子性更新评论数
+    @Modifying
+    @Query("UPDATE PostCounterEntity pc SET pc.commentCount = GREATEST(pc.commentCount + :delta, 0), pc.updatedAt = CURRENT_TIMESTAMP WHERE pc.postId = :postId")
+    int batchIncrementCommentCount(@Param("postId") Long postId, @Param("delta") int delta);
+
+    // 批量原子性更新收藏数
+    @Modifying
+    @Query("UPDATE PostCounterEntity pc SET pc.favoriteCount = GREATEST(pc.favoriteCount + :delta, 0), pc.updatedAt = CURRENT_TIMESTAMP WHERE pc.postId = :postId")
+    int batchIncrementFavoriteCount(@Param("postId") Long postId, @Param("delta") int delta);
+
+    // 批量原子性更新浏览数
+    @Modifying
+    @Query("UPDATE PostCounterEntity pc SET pc.viewCount = GREATEST(pc.viewCount + :delta, 0), pc.updatedAt = CURRENT_TIMESTAMP WHERE pc.postId = :postId")
+    int batchIncrementViewCount(@Param("postId") Long postId, @Param("delta") int delta);
+
     // 批量获取多个帖子的计数器
     @Query("SELECT pc FROM PostCounterEntity pc WHERE pc.postId IN :postIds")
     List<PostCounterEntity> findByPostIdIn(@Param("postIds") List<Long> postIds);

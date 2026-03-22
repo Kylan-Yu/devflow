@@ -10,6 +10,7 @@ import com.devflow.api.modules.interaction.dto.response.PostInteractionStateResp
 import com.devflow.api.modules.interaction.dto.response.PostInteractionSummaryResponse;
 import com.devflow.api.modules.interaction.entity.CommentEntity;
 import com.devflow.api.modules.interaction.entity.CommentStatus;
+import com.devflow.api.modules.interaction.entity.PostCounterEntity;
 import com.devflow.api.modules.interaction.entity.PostFavoriteEntity;
 import com.devflow.api.modules.interaction.entity.PostLikeEntity;
 import com.devflow.api.modules.interaction.entity.UserFollowEntity;
@@ -17,7 +18,7 @@ import com.devflow.api.modules.interaction.repository.CommentRepository;
 import com.devflow.api.modules.interaction.repository.PostFavoriteRepository;
 import com.devflow.api.modules.interaction.repository.PostLikeRepository;
 import com.devflow.api.modules.interaction.repository.UserFollowRepository;
-import com.devflow.api.modules.interaction.service.HighConcurrencyCounterService;
+import com.devflow.api.modules.interaction.service.SimpleCounterService;
 import com.devflow.api.modules.notification.event.AggregatedNotificationEventPublisher;
 import com.devflow.api.modules.notification.event.InteractionEventType;
 import com.devflow.api.modules.notification.event.InteractionNotificationEvent;
@@ -54,7 +55,7 @@ public class InteractionService {
     private final PostScoreCalculator postScoreCalculator;
     private final FeedPageCache feedPageCache;
     private final AggregatedNotificationEventPublisher aggregatedNotificationEventPublisher;
-    private final HighConcurrencyCounterService highConcurrencyCounterService;
+    private final SimpleCounterService counterService;
     private final PostService postService;
 
     public InteractionService(PostRepository postRepository,
@@ -66,7 +67,7 @@ public class InteractionService {
                               PostScoreCalculator postScoreCalculator,
                               FeedPageCache feedPageCache,
                               AggregatedNotificationEventPublisher aggregatedNotificationEventPublisher,
-                              HighConcurrencyCounterService highConcurrencyCounterService,
+                              SimpleCounterService counterService,
                               PostService postService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
@@ -77,16 +78,18 @@ public class InteractionService {
         this.postScoreCalculator = postScoreCalculator;
         this.feedPageCache = feedPageCache;
         this.aggregatedNotificationEventPublisher = aggregatedNotificationEventPublisher;
-        this.highConcurrencyCounterService = highConcurrencyCounterService;
+        this.counterService = counterService;
         this.postService = postService;
     }
 
     @Transactional
     public PostInteractionSummaryResponse likePost(Long userId, Long postId) {
+        System.out.println("DEBUG: likePost调用 - userId: " + userId + ", postId: " + postId);
         loadActiveUser(userId);
         PostEntity post = loadPublishedPost(postId);
 
         if (postLikeRepository.existsByPostIdAndUserId(postId, userId)) {
+            System.out.println("DEBUG: 用户已点赞，抛出异常");
             throw new BusinessException(ResponseCode.POST_ALREADY_LIKED);
         }
 
@@ -96,10 +99,14 @@ public class InteractionService {
         postLike.setUserId(userId);
         postLike.setCreatedAt(now);
         postLikeRepository.save(postLike);
+        System.out.println("DEBUG: 保存点赞记录成功");
 
-        // 使用高并发计数器更新
-        highConcurrencyCounterService.recordCounterChange(postId, 
-            HighConcurrencyCounterService.CounterType.LIKE, 1);
+        // 使用简单计数器更新
+        counterService.recordCounterChange(postId, 
+            SimpleCounterService.CounterType.LIKE, 1);
+        
+        // 清除缓存
+        feedPageCache.evictAll();
         
         // 使用聚合事件发布
         publishPostLikeEvent(userId, post);
@@ -108,14 +115,22 @@ public class InteractionService {
 
     @Transactional
     public PostInteractionSummaryResponse unlikePost(Long userId, Long postId) {
+        System.out.println("DEBUG: unlikePost调用 - userId: " + userId + ", postId: " + postId);
         loadActiveUser(userId);
         PostEntity post = loadPublishedPost(postId);
 
         PostLikeEntity like = postLikeRepository.findByPostIdAndUserId(postId, userId)
                 .orElseThrow(() -> new BusinessException(ResponseCode.POST_NOT_LIKED));
         postLikeRepository.delete(like);
+        System.out.println("DEBUG: 删除点赞记录成功");
 
-        applyPostCounterChange(post, -1, 0, 0, LocalDateTime.now());
+        // 使用简单计数器更新
+        counterService.recordCounterChange(postId, 
+            SimpleCounterService.CounterType.LIKE, -1);
+        
+        // 清除缓存
+        feedPageCache.evictAll();
+        
         return toSummary(post);
     }
 
@@ -134,7 +149,13 @@ public class InteractionService {
         favorite.setCreatedAt(LocalDateTime.now());
         postFavoriteRepository.save(favorite);
 
-        applyPostCounterChange(post, 0, 0, 1, LocalDateTime.now());
+        // 使用简单计数器更新
+        counterService.recordCounterChange(postId, 
+            SimpleCounterService.CounterType.FAVORITE, 1);
+        
+        // 清除缓存
+        feedPageCache.evictAll();
+        
         return toSummary(post);
     }
 
@@ -147,7 +168,13 @@ public class InteractionService {
                 .orElseThrow(() -> new BusinessException(ResponseCode.POST_NOT_FAVORITED));
         postFavoriteRepository.delete(favorite);
 
-        applyPostCounterChange(post, 0, 0, -1, LocalDateTime.now());
+        // 使用简单计数器更新
+        counterService.recordCounterChange(postId, 
+            SimpleCounterService.CounterType.FAVORITE, -1);
+        
+        // 清除缓存
+        feedPageCache.evictAll();
+        
         return toSummary(post);
     }
 
@@ -314,7 +341,7 @@ public class InteractionService {
 
     private void publishAfterCommit(String routingKey, InteractionNotificationEvent event) {
         // EN: Interaction writes are committed before notification event publish.
-        notificationEventPublisher.publishAfterCommit(routingKey, event);
+        aggregatedNotificationEventPublisher.publishAfterCommit(routingKey, event);
     }
 
     private UserEntity loadActiveUser(Long userId) {
@@ -352,11 +379,13 @@ public class InteractionService {
     }
 
     private PostInteractionSummaryResponse toSummary(PostEntity post) {
+        // 从计数器表获取最新数据，而不是Post实体的缓存数据
+        PostCounterEntity counter = counterService.getPostCounter(post.getId());
         return new PostInteractionSummaryResponse(
                 post.getId(),
-                post.getLikeCount(),
-                post.getCommentCount(),
-                post.getFavoriteCount(),
+                counter.getLikeCount() != null ? counter.getLikeCount().intValue() : 0,
+                counter.getCommentCount() != null ? counter.getCommentCount().intValue() : 0,
+                counter.getFavoriteCount() != null ? counter.getFavoriteCount().intValue() : 0,
                 post.getScore()
         );
     }

@@ -8,6 +8,7 @@ import {
   type UpdateCurrentUserProfilePayload
 } from '../api/users';
 import { useCurrentUserId } from '../hooks/useCurrentUserId';
+import BackButton from '../components/BackButton';
 
 export default function ProfileSettingsPage() {
   const { i18n, t } = useTranslation();
@@ -142,9 +143,12 @@ export default function ProfileSettingsPage() {
   return (
     <main className="page-shell auth-shell-wide">
       <header className="top-row">
-        <div>
-          <h1>{t('profile.settings_title')}</h1>
-          <p className="hint-text">{t('profile.settings_description')}</p>
+        <div className="header-left">
+          <BackButton fallback="/" />
+          <div>
+            <h1>{t('profile.settings_title')}</h1>
+            <p className="hint-text">{t('profile.settings_description')}</p>
+          </div>
         </div>
 
         <div className="action-row compact-row">

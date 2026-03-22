@@ -7,6 +7,7 @@ import {
   markAllNotificationsRead,
   markNotificationRead
 } from '../api/notifications';
+import BackButton from '../components/BackButton';
 import type {
   NotificationItem,
   NotificationPushMessage,
@@ -136,7 +137,10 @@ export default function NotificationsPage() {
   return (
     <main className="page-shell">
       <header className="top-row">
-        <h1>{t('notification.title')}</h1>
+        <div className="header-left">
+          <BackButton fallback="/" />
+          <h1>{t('notification.title')}</h1>
+        </div>
         <div className="action-row compact-row">
           <button type="button" className="btn btn-secondary" onClick={() => refresh()} disabled={loading}>
             {t('notification.refresh')}

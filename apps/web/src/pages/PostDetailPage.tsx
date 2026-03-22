@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { deletePost, getPostDetail } from '../api/posts';
@@ -47,8 +47,7 @@ export default function PostDetailPage() {
             ...previous,
             likeCount: summary.likeCount,
             commentCount: summary.commentCount,
-            favoriteCount: summary.favoriteCount,
-            hotScore: summary.hotScore
+            favoriteCount: summary.favoriteCount
           }
         : previous
     );
@@ -117,11 +116,12 @@ export default function PostDetailPage() {
   };
 
   const onToggleLike = async () => {
-    if (!post) {
+    if (!post || !currentUserId) {
       return;
     }
-    setMessage(null);
+
     try {
+      setMessage(null);
       const summary = liked ? await unlikePost(post.id) : await likePost(post.id);
       setLiked(!liked);
       applySummary(summary);
@@ -132,11 +132,12 @@ export default function PostDetailPage() {
   };
 
   const onToggleFavorite = async () => {
-    if (!post) {
+    if (!post || !currentUserId) {
       return;
     }
-    setMessage(null);
+
     try {
+      setMessage(null);
       const summary = favorited ? await unfavoritePost(post.id) : await favoritePost(post.id);
       setFavorited(!favorited);
       applySummary(summary);
@@ -258,7 +259,7 @@ export default function PostDetailPage() {
       {!currentUserId ? <p className="hint-text">{t('post.login_required')}</p> : null}
 
       <p className="hint-text">
-        {t('interaction.comment_count')}: {post.commentCount} | hot {post.hotScore.toFixed(4)}
+        {t('interaction.comment_count')}: {post.commentCount}
       </p>
 
       {currentUserId ? (

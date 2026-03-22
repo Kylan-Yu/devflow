@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getUserProfile } from '../api/users';
 import { listUserPosts } from '../api/posts';
+import BackButton from '../components/BackButton';
 import type { PostSummary } from '../types/post';
 import type { PublicUserProfile } from '../api/users';
 import PostCard from '../components/PostCard';
@@ -88,7 +89,10 @@ export default function UserProfilePage() {
 
   return (
     <main className="page-shell">
-      <h1>{t('profile.title')}</h1>
+      <div className="page-header">
+        <BackButton fallback="/" />
+        <h1>{t('profile.title')}</h1>
+      </div>
 
       {profile ? (
         <section className="profile-card">

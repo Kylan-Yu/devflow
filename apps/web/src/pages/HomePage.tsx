@@ -8,7 +8,6 @@ import { listCategories } from '../api/catalog';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import PostCard from '../components/PostCard';
 import Pagination from '../components/Pagination';
-import BackButton from '../components/BackButton';
 import { useCurrentUserId } from '../hooks/useCurrentUserId';
 import { useNotificationSocket } from '../hooks/useNotificationSocket';
 import type { NotificationPushMessage } from '../types/notification';
@@ -153,11 +152,10 @@ export default function HomePage() {
   return (
     <main className="page-shell">
       <header className="top-row">
-    <div className="header-left">
-      <BackButton />
-      <h1>{t('app.title')}</h1>
-    </div>
-    <div className="action-row compact-row">
+        <div className="header-left">
+          <h1>{t('app.title')}</h1>
+        </div>
+        <div className="action-row compact-row">
       {currentUserId ? (
         <button
           type="button"

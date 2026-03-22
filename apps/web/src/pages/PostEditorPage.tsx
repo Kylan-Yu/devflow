@@ -5,6 +5,7 @@ import { listCategories, listTags } from '../api/catalog';
 import { uploadPostCoverImage } from '../api/media';
 import { createPost, getPostDetail, updatePost } from '../api/posts';
 import { useCurrentUserId } from '../hooks/useCurrentUserId';
+import BackButton from '../components/BackButton';
 import type { CategoryItem, TagItem } from '../types/post';
 
 export default function PostEditorPage() {
@@ -128,7 +129,10 @@ export default function PostEditorPage() {
 
   return (
     <main className="page-shell auth-shell-wide">
-      <h1>{editingPostId ? t('post.edit_title') : t('post.create_title')}</h1>
+      <div className="page-header">
+        <BackButton fallback="/" />
+        <h1>{editingPostId ? t('post.edit_title') : t('post.create_title')}</h1>
+      </div>
 
       <form className="auth-form" onSubmit={submit}>
         <label>

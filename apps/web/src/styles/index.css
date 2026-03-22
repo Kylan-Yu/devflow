@@ -482,3 +482,22 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+/* Header layout styles */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
