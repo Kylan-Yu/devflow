@@ -107,6 +107,7 @@ public class InteractionService {
         
         // 清除缓存
         feedPageCache.evictAll();
+        postService.evictPostDetailCache(postId);
         
         // 使用聚合事件发布
         publishPostLikeEvent(userId, post);
@@ -130,6 +131,7 @@ public class InteractionService {
         
         // 清除缓存
         feedPageCache.evictAll();
+        postService.evictPostDetailCache(postId);
         
         return toSummary(post);
     }
@@ -155,6 +157,7 @@ public class InteractionService {
         
         // 清除缓存
         feedPageCache.evictAll();
+        postService.evictPostDetailCache(postId);
         
         return toSummary(post);
     }
@@ -174,6 +177,7 @@ public class InteractionService {
         
         // 清除缓存
         feedPageCache.evictAll();
+        postService.evictPostDetailCache(postId);
         
         return toSummary(post);
     }
