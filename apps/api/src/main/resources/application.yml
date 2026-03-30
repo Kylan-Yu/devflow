@@ -2,9 +2,9 @@ spring:
   application:
     name: devflow-api
   datasource:
-    url: jdbc:mysql://localhost:3306/devflow?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: devflow
-    password: devflow
+    url: jdbc:mysql://192.168.15.100:3306/devflow?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: shice2022mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     open-in-view: false
@@ -14,18 +14,18 @@ spring:
       hibernate:
         format_sql: true
   flyway:
-    enabled: true
-    locations: classpath:db/migration
+    enabled: false
   rabbitmq:
-    host: localhost
+    host: 192.168.15.100
     port: 5672
-    username: devflow
-    password: devflow
+    username: root
+    password: 123456
     virtual-host: /
   data:
     redis:
-      host: localhost
+      host: 192.168.15.100
       port: 6379
+      database: 15
       timeout: 2000ms
 
 server:
@@ -50,11 +50,11 @@ devflow:
   storage:
     minio:
       enabled: true
-      endpoint: http://localhost:9000
+      endpoint: http://192.168.15.100:9000
       access-key: devflow
       secret-key: devflow123
       bucket: devflow-public
-      public-base-url: http://localhost:9000/devflow-public
+      public-base-url: http://192.168.15.100:9000/devflow-public
       avatar-prefix: avatars
       post-cover-prefix: post-covers
       max-file-size-bytes: 5242880
